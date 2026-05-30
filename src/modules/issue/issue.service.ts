@@ -1,5 +1,5 @@
 import { pool } from "../../db";
-import type { IIssue } from "./issue.interface";
+import type { IIssue, IUserPayload } from "./issue.interface";
 
 // Create Issue Into DB
 const createIssueIntoDB = async (payload: IIssue, reporterId: number) => {
@@ -99,8 +99,56 @@ const getAllIssuesFromDB = async (sort = "newest", type?: string, status?: strin
 
 }
 
+// Update Issue Into DB
+const updateIssueIntoDB = async (id: string, payload: Partial<IIssue>, user: IUserPayload) => {
+
+    const { title, description, type, status } = payload;
+
+    const existingIssueResult = await pool.query(`
+        SELECT * FROM issues WHERE id=$1
+        `, [id]
+    )
+
+    const existingIssue = existingIssueResult.rows[0]
+
+    if(!existingIssue) {
+        throw new Error("Issue Not Found")
+    }
+
+    // Contributor check
+    if(user.role === "contributor") {
+        if(existingIssue.reporter_id !== user.id) {
+            throw new Error(
+                "You can only update your own issue"
+            );
+        }
+
+        if(existingIssue.status !== 'open') {
+            throw new Error(
+                "You cannot update non-open issues"
+            )
+        }
+    }
+
+    const result = await pool.query(`
+        UPDATE issues
+        SET
+            title=COALESCE($1, title),
+            description=COALESCE($2, description),
+            type=COALESCE($3, type),
+            status=COALESCE($4, status),
+            updated_at=CURRENT_TIMESTAMP
+
+            WHERE id=$5 RETURNING *
+        `, [title, description, type, status, id],
+    )
+
+    return result.rows[0];
+}
+
 export const issueService = {
     createIssueIntoDB,
     getSingleIssueFromDB,
     getAllIssuesFromDB,
+    updateIssueIntoDB,
 }

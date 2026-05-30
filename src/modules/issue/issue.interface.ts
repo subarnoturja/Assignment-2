@@ -12,3 +12,9 @@ export interface IIssue {
     created_at?: Date;
     update_at?: Date;
 }
+
+export interface IUserPayload{
+    id: string;
+    name: string;
+    role: 'contributor' | 'maintainer';
+}
