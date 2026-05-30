@@ -1,4 +1,5 @@
 import express, { type Application, type Request, type Response } from "express";
+import { userRoute } from "./modules/user/user.route";
 
 const app : Application = express();
 
@@ -11,5 +12,8 @@ app.get('/', (req: Request, res: Response) => {
         author: "Assignment-2",
     })
 })
+
+// Routes
+app.use('/api/auth', userRoute);
 
 export default app;
