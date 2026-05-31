@@ -2,7 +2,7 @@
 
 > An internal tech issue & feature tracker for software teams — report bugs, suggest features, and coordinate resolutions.
 
-**Live URL:** `https://assignment-2-subarnoturja-subarno-ranjan-baruas-projects.vercel.app/`
+**Live URL:** `https://assignment-2-xi-weld.vercel.app/`
 
 ---
 
